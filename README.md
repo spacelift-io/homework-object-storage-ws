@@ -6,10 +6,14 @@ Each of them listens on port 9000.
 They have access keys and secret keys configured through Docker using environment variables.
 You can assume that the set of Minio instances doesn't change in a "test scenario", though you shouldn't assume any constant number of them existing.
 
-As you're task you'll be creating a simple **stateless** distributed Object Storage Gateway, listening on HTTP port 3000.
-As its main functionality it should offer two endpoints:
- - **PUT** */object/{id}* - The request body should be used as the object body. If the file already exists, you should either overwrite it, or return an error, your choice.
- - **GET** */object/{id}* - Should respond with the object body, or return code 404 if it doesn't exist.
+As your task you'll be creating a simple **stateless** distributed Object Storage Gateway, listening on HTTP port 3000.
+As its main functionality it should offer a single endpoint `/ws` where it should handle websocket connections. There, it should listen for two possible messages:
+ - `{"type": "PUT", "id": "...", "data": "data as string"}` - The data field should be used as the object body. If the file already exists, you should either overwrite it, or respond with an error message, your choice.
+ - `{"type": "GET", "id": "..."}` - Should respond with `{"data": "data as string"}`, or if the object doesn't exist: `{"data": null}`
+
+The `"id"` field will contain a text ID of the object.
+
+The format of error JSON messages is up to you.
 
 When handling a get or put request, you should consistently (wrt the ID) choose one of the Minio instances and use it to serve the request.
 You should use varying Minio instances depending on the ID.
@@ -24,6 +28,7 @@ the [Minio client library](https://github.com/minio/minio-go),
 as well as any other libraries you may deem necessary or useful (within reason).
 i.e. you can use the [Gorrila Mux](https://github.com/gorilla/mux) library as an HTTP router,
 but feel free to use a different one or even just the standard library.
+For websockets, [Gorilla Websocket](https://github.com/gorilla/websocket) would be a good choice.
 
 You should implement proper error handling. (the app shouldn't instantly crash if something doesn't work)
 
