@@ -7,7 +7,7 @@ They have access keys and secret keys configured through Docker using environmen
 You can assume that the set of Minio instances doesn't change in a "test scenario", though you shouldn't assume any constant number of them existing.
 
 As your task you'll be creating a simple **stateless** distributed Object Storage Gateway, listening on HTTP port 3000.
-As its main functionality it should offer a single endpoint `/ws` where it should handle websocket connections. There, it should listen for two possible messages:
+As its main functionality it should offer a single endpoint `/ws` where it should handle websocket connections. On the connection, it should listen for two possible messages:
  - `{"type": "PUT", "id": "...", "data": "data as string"}` - The data field should be used as the object body. If the file already exists, you should either overwrite it, or respond with an error message, your choice.
  - `{"type": "GET", "id": "..."}` - Should respond with `{"data": "data as string"}`, or if the object doesn't exist: `{"data": null}`
 
